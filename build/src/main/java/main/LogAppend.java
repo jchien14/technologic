@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * Created by kevin on 9/7/14.
  */
-public class LogAppend {
+public final class LogAppend {
 
     public static void append(String[] args) throws IOException {
         if (args[0].equals("-B")){
