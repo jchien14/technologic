@@ -88,7 +88,7 @@ public final class GalleryState {
                 if (roomOccupancies.containsKey(room)) {
                     roomOccupancies.get(room).add(history.getName());
                 } else {
-                    final Set<String> people = new TreeSet<String>();
+                    final Set<String> people = new TreeSet<String>(new NameComparator());
                     people.add(history.getName());
                     roomOccupancies.put(room, people);
                 }

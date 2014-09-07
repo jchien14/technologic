@@ -16,7 +16,7 @@ public final class HistoryUtils {
     }
 
     public static TreeSet<String> toSortedStringSet(String list) {
-        final TreeSet<String> elements = new TreeSet<String>();
+        final TreeSet<String> elements = new TreeSet<String>(new NameComparator());
         Collections.addAll(elements, list.split(LIST_DELIMITER));
         return elements;
     }
