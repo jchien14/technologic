@@ -1,5 +1,6 @@
 package history;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 
 import java.util.*;
@@ -9,15 +10,15 @@ import java.util.*;
  */
 public final class GalleryState {
 
-    private final int time;
+    private int currentTime;
 
     private final Set<String> employeesInside;
     private final Set<String> guestsInside;
     private final Map<String, PersonHistory> histories;
 
-    private GalleryState(int time, TreeSet<String> employees, TreeSet<String> guests,
+    private GalleryState(int currentTime, TreeSet<String> employees, TreeSet<String> guests,
                          Map<String, PersonHistory> histories) {
-        this.time = time;
+        this.currentTime = currentTime;
         this.employeesInside = employees;
         this.guestsInside = guests;
         this.histories = histories;
@@ -25,7 +26,7 @@ public final class GalleryState {
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder(Integer.toString(time));
+        final StringBuilder builder = new StringBuilder(Integer.toString(currentTime));
 
         builder.append(HistoryUtils.DELIMITER);
         builder.append(HistoryUtils.toListDelimitedString(employeesInside));
@@ -51,10 +52,9 @@ public final class GalleryState {
     }
 
     /**
-     * No defensive copying for performance reasons. DO NOT MUTATE the returned List. Use
-     * methods {@link leaveRoom()} or {@link enterRoom()} instead.
+     * No defensive copying for performance reasons. DO NOT MUTATE the returned List.
      */
-    public List<Integer> getRoomsVisited(String name) {
+    List<Integer> getRoomsVisited(String name) {
         final PersonHistory history = histories.get(name);
         if (history == null) {
             return Collections.emptyList();
@@ -63,7 +63,7 @@ public final class GalleryState {
         }
     }
 
-    public Integer getTimeSpentInGallery(String name) {
+    Integer getTimeSpentInGallery(String name) {
         final PersonHistory history = histories.get(name);
         if (history == null) {
             return null;
@@ -72,15 +72,15 @@ public final class GalleryState {
         }
     }
 
-    public Set<String> getEmployeesInsideGallery() {
+    Set<String> getEmployeesInsideGallery() {
         return employeesInside;
     }
 
-    public Set<String> getGuestsInsideGallery() {
+    Set<String> getGuestsInsideGallery() {
         return guestsInside;
     }
 
-    public Map<Integer, Set<String>> getRoomOccupancies() {
+    Map<Integer, Set<String>> getRoomOccupancies() {
         final Map<Integer, Set<String>> roomOccupancies = new TreeMap<Integer, Set<String>>();
         for (PersonHistory history : histories.values()) {
             if (history.isInsideRoom()) {
@@ -97,5 +97,61 @@ public final class GalleryState {
         return roomOccupancies;
     }
 
-    // TODO: Add methods for logappend to call (e.g. leaveRoom(person, room), enterRoom(person, room))
+    public void employeeGalleryArrival(int time, String name) throws IllegalArgumentException {
+        Preconditions.checkArgument(time > currentTime);
+        Preconditions.checkArgument(!employeesInside.contains(name));
+
+        updateCurrentTime(time);
+        employeesInside.add(name);
+    }
+
+    public void guestGalleryArrival(int time, String name) throws IllegalArgumentException {
+        Preconditions.checkArgument(time > currentTime);
+        Preconditions.checkArgument(!guestsInside.contains(name));
+
+        updateCurrentTime(time);
+        guestsInside.add(name);
+    }
+
+    public void personRoomEnter(int time, String name, Integer room) throws IllegalArgumentException {
+        Preconditions.checkArgument(time > currentTime);
+        Preconditions.checkArgument(employeesInside.contains(name) || guestsInside.contains(name));
+
+        updateCurrentTime(time);
+        histories.get(name).enterRoom(room);
+    }
+
+    public void employeeGalleryDeparture(int time, String name) throws IllegalArgumentException {
+        Preconditions.checkArgument(time > currentTime);
+        Preconditions.checkArgument(employeesInside.contains(name));
+
+        updateCurrentTime(time);
+        employeesInside.remove(name);
+    }
+
+    public void guestGalleryDeparture(int time, String name) throws IllegalArgumentException {
+        Preconditions.checkArgument(time > currentTime);
+        Preconditions.checkArgument(guestsInside.contains(name));
+
+        updateCurrentTime(time);
+        guestsInside.remove(name);
+    }
+
+    public void personRoomLeave(int time, String name, Integer room) throws IllegalArgumentException {
+        Preconditions.checkArgument(time > currentTime);
+        Preconditions.checkArgument(employeesInside.contains(name) || guestsInside.contains(name));
+
+        updateCurrentTime(time);
+        histories.get(name).leaveRoom(room);
+    }
+
+    private void updateCurrentTime(int newTime) {
+        for (String person : employeesInside) {
+            histories.get(person).incrementTimeSpentInGallery(newTime - currentTime);
+        }
+        for (String person : guestsInside) {
+            histories.get(person).incrementTimeSpentInGallery(newTime - currentTime);
+        }
+        currentTime = newTime;
+    }
 }
