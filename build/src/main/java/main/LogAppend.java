@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public final class LogAppend {
 
-    public static void append(String[] args) throws IOException {
+    public static void append(String[] args) {
         if (args[0].equals("-B")){
             Preconditions.checkArgument(args.length == 2);
             batchAppend(args[1]);
@@ -25,6 +25,7 @@ public final class LogAppend {
 
     //TODO reads in command args line by line from file
     public static void batchAppend(String file) {
+        // Maps file paths to Gallery States
         HashMap<String, GalleryState> states = new HashMap<String, GalleryState>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -34,12 +35,7 @@ public final class LogAppend {
                 //baby version of the full try catch
                 try {
                     checkAppendArgs(args);
-                    String path;
-                    if (args.length == 8) {
-                        path = args[7];
-                    } else {
-                        path = args[9];
-                    }
+                    String path = args[args.length - 1];
 
                     LogUtils.validateToken(args[3], path);
                     if (!states.containsKey(path)) {
@@ -60,15 +56,9 @@ public final class LogAppend {
 
     public static void singleAppend(String[] args){
         checkAppendArgs(args);
-        GalleryState state;
-        if (args.length == 8){
-            LogUtils.validateToken(args[3], args[7]);
-            state = LogUtils.getLogState(args[3], args[7]);
-        }
-        else {
-            LogUtils.validateToken(args[3],args[9]);
-            state = LogUtils.getLogState(args[3], args[9]);
-        }
+        LogUtils.validateToken(args[3],args[args.length - 1]);
+        GalleryState state = LogUtils.getLogState(args[3], args[args.length - 1]);
+
 
         appendEvent(args, state);
         //TODO do whatever to write out the state to file
@@ -81,12 +71,8 @@ public final class LogAppend {
         boolean isEmployee = args[4].equals("-E");
         String name = args[5];
         boolean arrival = args[6].equals("-A");
-        int room = -1;
         if (args.length == 10){
-            room = Integer.parseInt(args[8]);
-        }
-
-        if (room >= 0) {
+            int room = Integer.parseInt(args[8]);
             if (arrival) {
                 state.personRoomEnter(time, name, room);
             }
