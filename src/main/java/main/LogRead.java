@@ -35,23 +35,73 @@ public final class LogRead {
             argsOffset = 1;
         }
 
-        if (cmd.equals("-S")){
-            readState(args, argsOffset, printHTML);
-        } else if (cmd.equals("-R")) {
+        switch (cmd) {
+            case "-S":
+                readState(args, argsOffset, printHTML);
+                break;
+            case "-R":
+                readRooms(args, argsOffset, printHTML);
+                break;
+            case "-T":
+                readTime(args, printHTML);
+                break;
+            case "-I":
 
+                break;
+            case "-A":
+
+                break;
+            case "-B":
+
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
-
-
-
     }
 
     public static void readState(String[] args, int argsOffset, boolean printHTML){
         Preconditions.checkArgument(args.length == argsOffset + 4);
         HistoryPrinter printer = new HistoryPrinter(LogUtils.getLogState(args[1], args[args.length - 1]));
-        printer.printState();
+        if (printHTML) {
+            printer.printStateHTML();
+        }
+        else {
+            printer.printState();
+        }
+    }
+
+    public static void readRooms(String[] args, int argsOffset, boolean printHTML){
+        int argIndex = 3 + argsOffset;
+        Preconditions.checkArgument(args[argIndex].equals("-E") || args[argIndex].equals("-G"));
+        argIndex ++;
+        Preconditions.checkArgument(args[argIndex].matches("[a-zA-Z]+"));
+        Preconditions.checkArgument(args.length == argsOffset + 6);
+        HistoryPrinter printer = new HistoryPrinter(LogUtils.getLogState(args[1], args[args.length - 1]));
+        if (printHTML) {
+            printer.printRoomsVisitedHTML(args[argIndex]);
+        }
+        else {
+            printer.printRoomsVisited(args[argIndex]);
+        }
+    }
+
+    public static void readTime(String[] args, boolean printHTML){
+        Preconditions.checkArgument(!printHTML);
+        Preconditions.checkArgument(args[3].equals("-E") || args[3].equals("-G"));
+        Preconditions.checkArgument(args[4].matches("[a-zA-Z]+"));
+        Preconditions.checkArgument(args.length == 6);
+        HistoryPrinter printer = new HistoryPrinter(LogUtils.getLogState(args[1], args[args.length - 1]));
+        printer.printTimeSpentInGallery(args[4]);
     }
 
     public static void main(String[] args){
+        try {
+            read(args);
+            System.exit(0);
+        } catch (FileNotFoundException e) {
+            System.out.println("invalid");
+            System.exit(-1);
+        }
 
     }
 }
