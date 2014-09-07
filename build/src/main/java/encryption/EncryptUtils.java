@@ -26,7 +26,6 @@ public class EncryptUtils {
             long[] hash = MurmurHash3.hash(token.getBytes(StandardCharsets.US_ASCII));
             byte[] keyBytes = ByteBuffer.allocate(16).putLong(hash[0]).putLong(hash[1]).array();
             SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
-            System.out.println(keyBytes.length);
             cipher.init(mode, key);
             return cipher.doFinal(text);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
