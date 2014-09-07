@@ -8,8 +8,8 @@ import history.GalleryState;
  */
 public final class LogUtils {
 
-    // TODO gets current gallery state from a log file - if make, creates file if file doesnt exist and returns empty state
-    public static GalleryState getLogState(String token, String file, boolean make){
+    // TODO gets current gallery state from a log file -  if file doesnt exist returns empty state
+    public static GalleryState getLogState(String token, String file){
         throw new UnsupportedOperationException();
     }
 
