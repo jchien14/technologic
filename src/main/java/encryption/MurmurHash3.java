@@ -1,9 +1,7 @@
 package encryption;
 
-import java.nio.charset.Charset;
-
 /**
- * build.src.main.java.encryption.MurmurHash3 implementation in Java, based on Austin Appleby's <a href=
+ * MurmurHash3 implementation in Java, based on Austin Appleby's <a href=
  * "https://code.google.com/p/smhasher/source/browse/trunk/build.src.main.java.encryption.MurmurHash3.cpp"
  * >original in C</a>
  *
@@ -18,7 +16,10 @@ import java.nio.charset.Charset;
  */
 
 public final class MurmurHash3 {
-    private static final Charset UTF8 = Charset.forName("UTF-8");
+
+    private MurmurHash3() {
+        // static methods should not be initialized
+    }
 
     private static class State {
         long h1;
@@ -181,7 +182,7 @@ public final class MurmurHash3 {
         return new long[] { state.h1, state.h2 };
     }
 
-    public long[] hash(byte[] payload) {
+    public static long[] hash(byte[] payload) {
         return MurmurHash3_x64_128(payload, 9001);
     }
 }
