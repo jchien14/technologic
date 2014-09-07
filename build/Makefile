@@ -6,6 +6,7 @@ JC = javac
 
 CLASSES = \
 		../src/main/java/encryption/MurmurHash3.java \
+		../src/main/java/encryption/EncryptUtils.java \
 		../src/main/java/history/HistoryUtils.java \
 		../src/main/java/history/PersonHistory.java \
 		../src/main/java/history/GalleryState.java \

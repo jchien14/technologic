@@ -58,8 +58,8 @@ public final class HistoryPrinter {
     public int printStateHTML() {
         final StringBuilder builder = new StringBuilder("<html><body><table><tr><th>Employee</th><th>Guest</th></tr>");
         final Map<Integer, Set<String>> roomOccupancies = state.getRoomOccupancies();
-        final ArrayList<String> employees = new ArrayList(state.getEmployeesInsideGallery());
-        final ArrayList<String> guests = new ArrayList(state.getGuestsInsideGallery());
+        final ArrayList<String> employees = new ArrayList<>(state.getEmployeesInsideGallery());
+        final ArrayList<String> guests = new ArrayList<>(state.getGuestsInsideGallery());
 
         int i = 0;
         for ( ; i < Math.min(employees.size(), guests.size()); i++) {
