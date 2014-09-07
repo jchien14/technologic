@@ -1,5 +1,7 @@
 package history;
 
+import com.google.common.base.Joiner;
+
 import java.util.*;
 
 /**
@@ -26,5 +28,15 @@ public final class HistoryUtils {
             result.add(Integer.valueOf(num));
         }
         return result;
+    }
+
+    public static String toListDelimitedString(Iterable<?> iterable) {
+        final Joiner joiner = Joiner.on(LIST_DELIMITER);
+        return joiner.join(iterable);
+    }
+
+    public static String toDelimitedString(Iterable<?> iterable) {
+        final Joiner joiner = Joiner.on(DELIMITER);
+        return joiner.join(iterable);
     }
 }
