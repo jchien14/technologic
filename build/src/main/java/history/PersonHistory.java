@@ -1,7 +1,5 @@
 package history;
 
-import com.google.common.base.Joiner;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +58,11 @@ final class PersonHistory {
     }
 
     public static String toString(Map<String, PersonHistory> histories) {
-        final Joiner joiner = Joiner.on(HistoryUtils.DELIMITER);
-        return joiner.join(histories.values());
+        return HistoryUtils.toDelimitedString(histories.values());
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<Integer> getRoomsVisited() {
