@@ -181,7 +181,7 @@ public final class MurmurHash3 {
         return new long[] { state.h1, state.h2 };
     }
 
-    public long[] hash(byte[] payload) {
+    public static long[] hash(byte[] payload) {
         return MurmurHash3_x64_128(payload, 9001);
     }
 }
