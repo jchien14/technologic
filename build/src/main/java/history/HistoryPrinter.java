@@ -25,6 +25,22 @@ public final class HistoryPrinter {
         return 0;
     }
 
+    // -R arg html
+    public int printRoomsVisitedHTML(String name) {
+        final StringBuilder builder = new StringBuilder("<html><body><table><tr><th><Rooms</th></tr>");
+        final Joiner joiner = Joiner.on("</td></tr><tr><td>");
+
+        final List<Integer> rooms = state.getRoomsVisited(name);
+        if (rooms.size() > 0){
+            builder.append("<tr><td>");
+            builder.append(joiner.join(rooms));
+            builder.append("</td></tr>");
+        }
+        builder.append("</table></body></html>");
+        System.out.print(builder.toString());
+        return 0;
+    }
+
     // -S arg
     public int printState() {
         throw new UnsupportedOperationException("not implemented yet");
