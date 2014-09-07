@@ -24,43 +24,37 @@ public final class LogAppend {
     }
 
     //TODO reads in command args line by line from file
-    public static void batchAppend(String file) throws IOException {
+    public static void batchAppend(String file) {
         HashMap<String, GalleryState> states = new HashMap<String, GalleryState>();
 
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] args = line.split(" ");
-            //baby version of the full try catch
-            try {
-                checkAppendArgs(args);
-                String path;
-                int room = -1;
-                if (args.length == 8){
-                    path = args[7];
-                }
-                else{
-                    room = Integer.parseInt(args[8]);
-                    path = args[9];
-                }
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] args = line.split(" ");
+                //baby version of the full try catch
+                try {
+                    checkAppendArgs(args);
+                    String path;
+                    if (args.length == 8) {
+                        path = args[7];
+                    } else {
+                        path = args[9];
+                    }
 
-                LogUtils.validateToken(args[3], path);
-                if(!states.containsKey(path)) {
-                    states.put(path, LogUtils.getLogState(args[3], path));
+                    LogUtils.validateToken(args[3], path);
+                    if (!states.containsKey(path)) {
+                        states.put(path, LogUtils.getLogState(args[3], path));
+                    }
+
+                    appendEvent(args, states.get(path));
+                } catch (Exception e) {
+                    System.out.println("invalid");
                 }
-
-                int time = Integer.parseInt(args[1]);
-                boolean isEmployee = args[4].equals("-E");
-                String name = args[5];
-                boolean arrival = args[6].equals("-A");
-
-                appendEvent(time, isEmployee, name, arrival, room, states.get(path));
-            }
-            catch (Exception e){
-                System.out.println("invalid");
             }
         }
-        br.close();
+        catch (IOException e) {
+            System.out.println("invalid");
+        }
         //TODO do whatever to write out the state to files
     }
 
@@ -76,6 +70,13 @@ public final class LogAppend {
             state = LogUtils.getLogState(args[3], args[9]);
         }
 
+        appendEvent(args, state);
+        //TODO do whatever to write out the state to file
+    }
+
+    // update state from a single event
+    public static void appendEvent(String[] args, GalleryState state){
+
         int time = Integer.parseInt(args[1]);
         boolean isEmployee = args[4].equals("-E");
         String name = args[5];
@@ -84,13 +85,7 @@ public final class LogAppend {
         if (args.length == 10){
             room = Integer.parseInt(args[8]);
         }
-        appendEvent(time, isEmployee, name, arrival, room, state);
-        //TODO do whatever to write out the state to file
-    }
 
-    // update state from a single event
-    public static void appendEvent(int time, boolean isEmployee, String name,
-                                   boolean arrival, int room, GalleryState state){
         if (room >= 0) {
             if (arrival) {
                 state.personRoomEnter(time, name, room);
