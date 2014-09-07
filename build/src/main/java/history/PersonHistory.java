@@ -1,5 +1,7 @@
 package history;
 
+import com.google.common.base.Preconditions;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +12,8 @@ import java.util.Map;
 final class PersonHistory {
     private final String name;
     private final List<Integer> roomsVisited;
-    private final boolean insideRoom;
-    private final int timeSpentInGallery;
+    private boolean insideRoom;
+    private int timeSpentInGallery;
 
     private PersonHistory(String name, List<Integer> roomsVisited, boolean insideRoom, int timeSpentInGallery) {
         this.name = name;
@@ -75,5 +77,27 @@ final class PersonHistory {
 
     public int getTimeSpentInGallery() {
         return timeSpentInGallery;
+    }
+
+    public Integer getMostRecentRoom() {
+        return roomsVisited.get(roomsVisited.size() - 1);
+    }
+
+    public void incrementTimeSpentInGallery(int additionalTime) {
+        timeSpentInGallery += additionalTime;
+    }
+
+    public void enterRoom(Integer room) throws IllegalArgumentException {
+        Preconditions.checkArgument(!insideRoom);
+
+        roomsVisited.add(room);
+        insideRoom = true;
+    }
+
+    public void leaveRoom(Integer room) throws IllegalArgumentException {
+        Preconditions.checkArgument(room.equals(getMostRecentRoom()));
+        Preconditions.checkArgument(insideRoom);
+
+        insideRoom = false;
     }
 }
