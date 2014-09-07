@@ -10,7 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-public class EncryptUtils {
+public final class EncryptUtils {
+    private EncryptUtils() {}
+
     public static byte[] encrypt(byte[] plainText, String token) {
         return cipher(plainText, token, Cipher.ENCRYPT_MODE);
     }
@@ -22,20 +24,15 @@ public class EncryptUtils {
     private static byte[] cipher(byte[] text, String token, int mode) {
         try {
             // TODO figure out what algorithm we want here and change it, may require changing the secret key spec
-            Cipher cipher = Cipher.getInstance("AES");
-            long[] hash = MurmurHash3.hash(token.getBytes(StandardCharsets.US_ASCII));
-            byte[] keyBytes = ByteBuffer.allocate(16).putLong(hash[0]).putLong(hash[1]).array();
-            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
+            final Cipher cipher = Cipher.getInstance("AES");
+            final long[] hash = MurmurHash3.hash(token.getBytes(StandardCharsets.US_ASCII));
+            final byte[] keyBytes = ByteBuffer.allocate(16).putLong(hash[0]).putLong(hash[1]).array();
+            final SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
             cipher.init(mode, key);
             return cipher.doFinal(text);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            throw new AssertionError("No such cipher option", e);
-        } catch (InvalidKeyException e) {
-            throw new AssertionError("Key is invalid", e);
-        } catch (BadPaddingException e) {
-            throw new AssertionError("Bad Padding", e);
-        } catch (IllegalBlockSizeException e) {
-            throw new AssertionError("Illegal block size", e);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
+                BadPaddingException | IllegalBlockSizeException e) {
+            throw new AssertionError("Programming error", e);
         }
     }
 }
