@@ -33,7 +33,7 @@ public final class HistoryPrinter {
         final List<Integer> rooms = state.getRoomsVisited(name);
         for (Integer room : rooms) {
             builder.append("<tr><td>");
-            builder.append(Integer.toString(room));
+            builder.append(room.toString());
             builder.append("</td></tr>");
         }
         builder.append("</table></body></html>");
@@ -54,7 +54,7 @@ public final class HistoryPrinter {
         return 0;
     }
 
-    // -R arg html
+    // -S arg html
     public int printStateHTML() {
         final StringBuilder builder = new StringBuilder("<html><body><table><tr><th>Employee</th><th>Guest</th></tr>");
         final Map<Integer, Set<String>> roomOccupancies = state.getRoomOccupancies();
@@ -62,14 +62,14 @@ public final class HistoryPrinter {
         final ArrayList<String> guests = new ArrayList(state.getGuestsInsideGallery());
 
         int i = 0;
+        for ( ; i < Math.min(employees.size(), guests.size()); i++) {
+            builder.append("<tr><td>");
+            builder.append(employees.get(i));
+            builder.append("</td><td>");
+            builder.append(guests.get(i));
+            builder.append("</td></tr>");
+        }
         if (employees.size() < guests.size()) {
-            for ( ; i < employees.size(); i++) {
-                builder.append("<tr><td>");
-                builder.append(employees.get(i));
-                builder.append("</td><td>");
-                builder.append(guests.get(i));
-                builder.append("</td></tr>");
-            }
             for ( ; i < guests.size(); i++) {
                 builder.append("<tr><td>");
                 // no more employees
@@ -79,13 +79,6 @@ public final class HistoryPrinter {
             }
         }
         else {
-            for ( ; i < guests.size(); i++) {
-                builder.append("<tr><td>");
-                builder.append(employees.get(i));
-                builder.append("</td><td>");
-                builder.append(guests.get(i));
-                builder.append("</td></tr>");
-            }
             for ( ; i < employees.size(); i++) {
                 builder.append("<tr><td>");
                 builder.append(employees.get(i));
